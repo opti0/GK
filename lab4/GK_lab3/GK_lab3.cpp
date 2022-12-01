@@ -11,7 +11,8 @@ typedef float point3[3];
 point3* colours;
 int n_points;
 int model;
-bool tryb;
+bool tryb = true;
+static GLfloat R = 10.0; //promień
 static GLfloat viewer[] = { 0.0, 0.0, 10.0 };
 static GLfloat punkt_obserwacji[] = { 0.0, 0.0, 0.0 };
 // inicjalizacja położenia obserwatora
@@ -29,9 +30,23 @@ static int delta_x = 0;        // różnica pomiędzy pozycją bieżącą i popr
 
 static int y_pos_old = 0;
 static int delta_y = 0;
+static int z_pos_old = 0;
+static int delta_z = 0;
 
-/*************************************************************************************/
-// Funkcja "bada" stan myszy i ustawia wartości odpowiednich zmiennych globalnych
+float observerXS(float R, float azymut, float elewacja)
+{
+	return R * cos(azymut) * (float)cos(elewacja);
+}
+
+float observerYS(float R, float elewacja)
+{
+	return R * sin(elewacja);
+}
+
+float observerZS(float R, float azymut, float elewacja)
+{
+	return R * sin(azymut) * (float)cos(elewacja);
+}
 
 void Mouse(int btn, int state, int x, int y)
 {
@@ -231,12 +246,12 @@ void RenderScene(void)
 	Axes();
 	// Narysowanie osi przy pomocy funkcji zdefiniowanej powyżej 
 
-	if (status == 1)                     // jeśli lewy klawisz myszy wcięnięty
+	if (status == 1 && tryb)                     // jeśli lewy klawisz myszy wcięnięty
 	{
 		theta_x += delta_x * pix2angle; // modyfikacja kąta obrotu o kat proporcjonalny
 		theta_y += delta_y * pix2angle;
 	}  // do różnicy położeń kursora myszy
-	else if (status == 2) {
+	else if (status == 2 && tryb) {
 		if (delta_y > 0) {
 			viewer[2] += 0.1;
 			punkt_obserwacji[2] += 0.25;
@@ -245,10 +260,23 @@ void RenderScene(void)
 			viewer[2] -= 0.1;
 			punkt_obserwacji[2] -= 0.25;
 		}
-
-
+	}
+	else if (status == 1 && !tryb) {
+		theta_x += (delta_x * pix2angle/ 100.0f);    // modyfikacja kąta obrotu o kat proporcjonalny
+		theta_y += (delta_y * pix2angle / 100.0f);
+		viewer[0] = observerXS(R, theta_x, theta_y);
+		viewer[1] = observerYS(R, theta_y);
+		viewer[2] = observerZS(R, theta_x, theta_y);
 
 	}
+	else if (status == 2 && !tryb) {
+		R += (delta_y * pix2angle) / 25.0f; //zabezpieczenie
+		if (R < 1.0f) R = 1.0f;
+		viewer[0] = observerXS(R, theta_x, theta_y);
+		viewer[1] = observerYS(R, theta_y);
+		viewer[2] = observerZS(R, theta_x, theta_y);
+	}
+		
 
 	glRotatef(theta_x, 0.0, 1.0, 0.0);  //obrót obiektu o nowy kąt
 	glRotatef(theta_y, 1.0, 0.0, 0.0);  //obrót obiektu o nowy kąt
