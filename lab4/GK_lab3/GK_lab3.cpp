@@ -18,6 +18,8 @@ static GLfloat punkt_obserwacji[] = { 0.0, 0.0, 0.0 };
 // inicjalizacja położenia obserwatora
 static GLfloat theta_x = 0.0;   // kąt obrotu obiektu
 static GLfloat theta_y = 0.0;   // kąt obrotu obiektu
+static GLfloat theta_x1 = 0.0;   // kąt obrotu obiektu
+static GLfloat theta_y1 = 0.0;   // kąt obrotu obiektu
 static GLfloat pix2angle;     // przelicznik pikseli na stopnie
 
 static GLint status = 0;       // stan klawiszy myszy
@@ -262,19 +264,19 @@ void RenderScene(void)
 		}
 	}
 	else if (status == 1 && !tryb) {
-		theta_x += (delta_x * pix2angle/ 100.0f);    // modyfikacja kąta obrotu o kat proporcjonalny
-		theta_y += (delta_y * pix2angle / 100.0f);
-		viewer[0] = observerXS(R, theta_x, theta_y);
-		viewer[1] = observerYS(R, theta_y);
-		viewer[2] = observerZS(R, theta_x, theta_y);
+		theta_x1 += (delta_x * pix2angle/ 100.0f);    // modyfikacja kąta obrotu o kat proporcjonalny
+		theta_y1 += (delta_y * pix2angle / 100.0f);
+		viewer[0] = observerXS(R, theta_x1, theta_y1);
+		viewer[1] = observerYS(R, theta_y1);
+		viewer[2] = observerZS(R, theta_x1, theta_y1);
 
 	}
 	else if (status == 2 && !tryb) {
 		R += (delta_y * pix2angle) / 25.0f; //zabezpieczenie
 		if (R < 1.0f) R = 1.0f;
-		viewer[0] = observerXS(R, theta_x, theta_y);
-		viewer[1] = observerYS(R, theta_y);
-		viewer[2] = observerZS(R, theta_x, theta_y);
+		viewer[0] = observerXS(R, theta_x1, theta_y1);
+		viewer[1] = observerYS(R, theta_y1);
+		viewer[2] = observerZS(R, theta_x1, theta_y1);
 	}
 		
 
