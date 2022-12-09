@@ -12,8 +12,8 @@ point3* colours;
 int n_points;
 int model;
 bool tryb = true;
-bool light0 = true;
-bool light1 = true;
+bool light0 = false;
+bool light1 = false;
 static GLfloat R = 10.0; //promień
 static GLfloat viewer[] = { 0.0, 0.0, 10.0 };
 static GLfloat punkt_obserwacji[] = { 0.0, 0.0, 0.0 };
@@ -369,6 +369,12 @@ void keys(unsigned char key, int x, int y)
 		if(light0)glEnable(GL_LIGHT0);
 		else glDisable(GL_LIGHT0);
 	}
+	if (key == '2')
+	{
+		light1 = !light1;
+		if (light1)glEnable(GL_LIGHT1);
+		else glDisable(GL_LIGHT1);
+	}
 	RenderScene(); // przerysowywanie obrazu sceny
 }
 
@@ -397,21 +403,20 @@ void MyInit(void)
 	// współczynnik n opisujący połysk powierzchni
 
 /*************************************************************************************/
-// Definicja źródła światła
+// Definicja źródła światła nr 1
 
-	GLfloat light_position[] = { 0.0, 0.0, 10.0, 1.0 };
+	GLfloat light_position[] = { 0.0, -10.0, 0.0, 1.0 };
 	// położenie źródła
-
 
 	GLfloat light_ambient[] = { 0.1, 0.1, 0.1, 1.0 };
 	// składowe intensywności świecenia źródła światła otoczenia
 	// Ia = [Iar,Iag,Iab]
 
-	GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat light_diffuse[] = { 1.0, 0.0, 0.0, 1.0 };
 	// składowe intensywności świecenia źródła światła powodującego
 	// odbicie dyfuzyjne Id = [Idr,Idg,Idb]
 
-	GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat light_specular[] = { 1.0, 0.0, 0.0, 0.5 };
 	// składowe intensywności świecenia źródła światła powodującego
 	// odbicie kierunkowe Is = [Isr,Isg,Isb]
 
@@ -450,7 +455,20 @@ void MyInit(void)
 	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, att_constant);
 	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, att_linear);
 	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, att_quadratic);
+	
+	
+	GLfloat light_diffuse1[] = { 0.0, 0.0, 1.0, 1.0 };
+	GLfloat light_specular1[] = { 0.0, 0.0, 1.0, 0.5 };
+	GLfloat light_position1[] = { 0.0, 10.0, 0.0, 1.0 };
 
+	glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse1);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular1);
+	glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+
+	glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, att_constant);
+	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, att_linear);
+	glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, att_quadratic);
 
 	/*************************************************************************************/
 	// Ustawienie opcji systemu oświetlania sceny
@@ -521,7 +539,7 @@ void menu()
 		<< " - t - dla modelu czajniczka do herbaty"<<endl
 		<< " - 1 - dla wlaczenia/wylaczenia swiatla nr 1" << endl
 		<< " - 2 - dla wlaczenia/wylaczenia swiatla nr 2" << endl
-		<< " - spacja - dla zmiany rodzaju obrotu: obserwator/scena";
+		<< " - spacja - dla zmiany obrotu: obiekt/swiatlo";
 	cout << endl;
 }
 
