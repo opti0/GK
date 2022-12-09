@@ -12,6 +12,8 @@ point3* colours;
 int n_points;
 int model;
 bool tryb = true;
+bool light0 = true;
+bool light1 = true;
 static GLfloat R = 10.0; //promień
 static GLfloat viewer[] = { 0.0, 0.0, 10.0 };
 static GLfloat punkt_obserwacji[] = { 0.0, 0.0, 0.0 };
@@ -182,6 +184,7 @@ void Egg(int n_points)
 	point3* pompoints = new point3[n_points * n_points];
 	point3* vpoints = new point3[n_points * n_points];
 	double u, v;
+	double dlugoscwek;
 	int id = 0;
 	for (int i = 0; i < n_points; i++)
 		for (int j = 0; j < n_points; j++)
@@ -191,9 +194,13 @@ void Egg(int n_points)
 			points[id][0] = (-90 * pow(u, 5) + 225 * pow(u, 4) - 270 * pow(u, 3) + 180 * pow(u, 2) - 45 * u) * cos(M_PI * v);
 			points[id][1] = (160 * pow(u, 4) - 320 * pow(u, 3) + 160 * pow(u, 2) - 5);
 			points[id][2] = (-90 * pow(u, 5) + 225 * pow(u, 4) - 270 * pow(u, 3) + 180 * pow(u, 2) - 45 * u) * sin(M_PI * v);
-			vpoints[id][0] = wektorNormX();
-			vpoints[id][1] = wektorNormY();
-			vpoints[id][2] = wektorNormZ();
+			vpoints[id][0] = wektorNormX(u, v);
+			vpoints[id][1] = wektorNormY(u, v);
+			vpoints[id][2] = wektorNormZ(u, v);
+			dlugoscwek = sqrt(vpoints[id][0]* vpoints[id][0] + vpoints[id][1] * vpoints[id][1] + vpoints[id][2] * vpoints[id][2]);
+			vpoints[id][0] /= dlugoscwek;
+			vpoints[id][1] /= dlugoscwek;
+			vpoints[id][2] /= dlugoscwek;
 			id++;
 		}
 
@@ -246,20 +253,25 @@ void Egg(int n_points)
 
 				glBegin(GL_TRIANGLES);
 				glColor3d(colours[a][0], colours[a][1], colours[a][2]);
+				glNormal3d(vpoints[a][0], vpoints[a][1], vpoints[a][2]);
 				glVertex3d(points[a][0], points[a][1], points[a][2]);
 				glColor3d(colours[b][0], colours[b][1], colours[b][2]);
+				glNormal3d(vpoints[b][0], vpoints[b][1], vpoints[b][2]);
 				glVertex3d(points[b][0], points[b][1], points[b][2]);
 				glColor3d(colours[c][0], colours[c][1], colours[c][2]);
+				glNormal3d(vpoints[c][0], vpoints[c][1], vpoints[c][2]);
 				glVertex3d(points[c][0], points[c][1], points[c][2]);
 				glEnd();
 
 				glBegin(GL_TRIANGLES);
 				glColor3d(colours[b][0], colours[b][1], colours[b][2]);
-				glNormal3d();
+				glNormal3d(vpoints[b][0], vpoints[b][1], vpoints[b][2]);
 				glVertex3d(points[b][0], points[b][1], points[b][2]);
 				glColor3d(colours[c][0], colours[c][1], colours[c][2]);
+				glNormal3d(vpoints[c][0], vpoints[c][1], vpoints[c][2]);
 				glVertex3d(points[c][0], points[c][1], points[c][2]);
 				glColor3d(colours[d][0], colours[d][1], colours[d][2]);
+				glNormal3d(vpoints[d][0], vpoints[d][1], vpoints[d][2]);
 				glVertex3d(points[d][0], points[d][1], points[d][2]);
 				glEnd();
 			}
@@ -351,6 +363,12 @@ void keys(unsigned char key, int x, int y)
 		model = 4;
 	if (key == 32)
 		tryb = !tryb;
+	if (key == '1')
+	{
+		light0 = !light0;
+		if(light0)glEnable(GL_LIGHT0);
+		else glDisable(GL_LIGHT0);
+	}
 	RenderScene(); // przerysowywanie obrazu sceny
 }
 
@@ -439,7 +457,7 @@ void MyInit(void)
 
 	glShadeModel(GL_SMOOTH); // właczenie łagodnego cieniowania
 	glEnable(GL_LIGHTING);   // właczenie systemu oświetlenia sceny
-	glEnable(GL_LIGHT0);     // włączenie źródła o numerze 0
+	//glEnable(GL_LIGHT0);     // włączenie źródła o numerze 0
 	glEnable(GL_DEPTH_TEST); // włączenie mechanizmu z-bufora
 
 	/*************************************************************************************/
@@ -501,6 +519,8 @@ void menu()
 		<< " - w - dla modelu siatkowego" << endl
 		<< " - s - dla modelu kolorowego" << endl
 		<< " - t - dla modelu czajniczka do herbaty"<<endl
+		<< " - 1 - dla wlaczenia/wylaczenia swiatla nr 1" << endl
+		<< " - 2 - dla wlaczenia/wylaczenia swiatla nr 2" << endl
 		<< " - spacja - dla zmiany rodzaju obrotu: obserwator/scena";
 	cout << endl;
 }
