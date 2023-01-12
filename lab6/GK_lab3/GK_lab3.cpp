@@ -442,45 +442,51 @@ void Egg(int n_points)
 	if (model == 3)
 	{
 		int a, b, c, d;
+		double t_u = 0.0;
+		double t_v = 0.0;
+		double t_d = 1.0 / (n_points - 1);
 		for (int i = 0; i < n_points; i++)
 		{
-			for (int j = i; j < n_points * n_points - n_points; j += n_points)
+			for (int j = 0; j < n_points * n_points - n_points; j += n_points)
 			{
-				a = j;
-				b = j + n_points;
-				c = (j + 1) % (n_points * n_points);
-				d = (j + 1) % (n_points * n_points) + n_points;
+				a = j + i;
+				b = j + i + n_points;
+				c = (j + (i + 1) % n_points);
+				d = (j + (i + 1) % n_points) + n_points;
 
 				glBegin(GL_TRIANGLES);
 				glColor3d(colours[a][0], colours[a][1], colours[a][2]);
 				glNormal3d(vpoints[a][0], vpoints[a][1], vpoints[a][2]);
-				glTexCoord2d(j/n_points, i /n_points);
+				glTexCoord2d(t_u, t_v);
 				glVertex3d(points[a][0], points[a][1], points[a][2]);
 				glColor3d(colours[b][0], colours[b][1], colours[b][2]);
 				glNormal3d(vpoints[b][0], vpoints[b][1], vpoints[b][2]);
-				glTexCoord2d(j / n_points, i+1 / n_points);
+				glTexCoord2d(t_u, t_v + t_d);
 				glVertex3d(points[b][0], points[b][1], points[b][2]);
 				glColor3d(colours[c][0], colours[c][1], colours[c][2]);
 				glNormal3d(vpoints[c][0], vpoints[c][1], vpoints[c][2]);
-				glTexCoord2d(j+1 / n_points, i / n_points);
+				glTexCoord2d(t_u + t_d, t_v);
 				glVertex3d(points[c][0], points[c][1], points[c][2]);
 				glEnd();
 
 				glBegin(GL_TRIANGLES);
 				glColor3d(colours[b][0], colours[b][1], colours[b][2]);
 				glNormal3d(vpoints[b][0], vpoints[b][1], vpoints[b][2]);
-				//glTexCoord2d(a,a);
+				glTexCoord2d(t_u, t_v + t_d);
 				glVertex3d(points[b][0], points[b][1], points[b][2]);
 				glColor3d(colours[c][0], colours[c][1], colours[c][2]);
 				glNormal3d(vpoints[c][0], vpoints[c][1], vpoints[c][2]);
-				//glTexCoord2d(a,b);
+				glTexCoord2d(t_u + t_d, t_v);
 				glVertex3d(points[c][0], points[c][1], points[c][2]);
 				glColor3d(colours[d][0], colours[d][1], colours[d][2]);
 				glNormal3d(vpoints[d][0], vpoints[d][1], vpoints[d][2]);
-				//glTexCoord2d(b, 0.5*a);
+				glTexCoord2d(t_u + t_d, t_v + t_d);
 				glVertex3d(points[d][0], points[d][1], points[d][2]);
 				glEnd();
+
+				t_v += t_d;
 			}
+			t_u += t_d;
 		}
 	}
 	delete[] points;
