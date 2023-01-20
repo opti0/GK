@@ -612,7 +612,7 @@ void MyInit(void)
 	//glEnable(GL_CULL_FACE);
 	//  Przeczytanie obrazu tekstury z pliku o nazwie tekstura.tga
 
-	pBytes = LoadTGAImage("tekstury/D1_t.tga", &ImWidth, &ImHeight, &ImComponents, &ImFormat);
+	pBytes = LoadTGAImage("tekstury/P3_t.tga", &ImWidth, &ImHeight, &ImComponents, &ImFormat);
 
 	// Zdefiniowanie tekstury 2-D
 

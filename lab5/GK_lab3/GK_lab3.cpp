@@ -21,7 +21,9 @@ static GLfloat punkt_obserwacji[] = { 0.0, 0.0, 0.0 };
 static GLfloat theta_x = 0.0;   // kąt obrotu obiektu
 static GLfloat theta_y = 0.0;   // kąt obrotu obiektu
 static GLfloat theta_x1 = 0.0;   // kąt obrotu obiektu
-static GLfloat theta_y1 = 0.0;   // kąt obrotu obiektu
+static GLfloat theta_y1 = M_PI;   // kąt obrotu obiektu
+static GLfloat theta_x2 = 0.0;   // kąt obrotu obiektu
+static GLfloat theta_y2 = -M_PI;   // kąt obrotu obiektu
 static GLfloat pix2angle;     // przelicznik pikseli na stopnie
 
 static GLint status = 0;       // stan klawiszy myszy
@@ -318,21 +320,18 @@ void RenderScene(void)
 		}
 	}
 	else if (status == 1 && !tryb) {
-		theta_x1 += (delta_x * pix2angle/ 100.0f);    // modyfikacja kąta obrotu o kat proporcjonalny
+		theta_x1 -= (delta_x * pix2angle / 100.0f);    // modyfikacja kąta obrotu o kat proporcjonalny
 		theta_y1 += (delta_y * pix2angle / 100.0f);
-		viewer[0] = observerXS(R, theta_x1, theta_y1);
-		viewer[1] = observerYS(R, theta_y1);
-		viewer[2] = observerZS(R, theta_x1, theta_y1);
-
+		GLfloat light_position[] = { observerXS(10.0, theta_x1, theta_y1), observerYS(10.0, theta_y1), observerZS(10.0, theta_x1, theta_y1), 1.0 };
+		glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 	}
 	else if (status == 2 && !tryb) {
-		R += (delta_y * pix2angle) / 25.0f; //zabezpieczenie
-		if (R < 1.0f) R = 1.0f;
-		viewer[0] = observerXS(R, theta_x1, theta_y1);
-		viewer[1] = observerYS(R, theta_y1);
-		viewer[2] = observerZS(R, theta_x1, theta_y1);
+		theta_x2 -= (delta_x * pix2angle / 100.0f);    // modyfikacja kąta obrotu o kat proporcjonalny
+		theta_y2 += (delta_y * pix2angle / 100.0f);
+		GLfloat light_position[] = { observerXS(10.0, theta_x2, theta_y2), observerYS(10.0, theta_y2), observerZS(10.0, theta_x2, theta_y2), 1.0 };
+		glLightfv(GL_LIGHT1, GL_POSITION, light_position);
 	}
-		
+	
 
 	glRotatef(theta_x, 0.0, 1.0, 0.0);  //obrót obiektu o nowy kąt
 	glRotatef(theta_y, 1.0, 0.0, 0.0);  //obrót obiektu o nowy kąt
@@ -405,7 +404,7 @@ void MyInit(void)
 /*************************************************************************************/
 // Definicja źródła światła nr 1
 
-	GLfloat light_position[] = { 0.0, -10.0, 0.0, 1.0 };
+	GLfloat light_position[] = { observerXS(10.0, theta_x1, theta_y1), observerYS(10.0, theta_y1), observerZS(10.0, theta_x1, theta_y1), 1.0 };
 	// położenie źródła
 
 	GLfloat light_ambient[] = { 0.1, 0.1, 0.1, 1.0 };
@@ -459,7 +458,7 @@ void MyInit(void)
 	
 	GLfloat light_diffuse1[] = { 0.0, 0.0, 1.0, 1.0 };
 	GLfloat light_specular1[] = { 0.0, 0.0, 1.0, 0.5 };
-	GLfloat light_position1[] = { 0.0, 10.0, 0.0, 1.0 };
+	GLfloat light_position1[] = { observerXS(10.0, theta_x2, theta_y2), observerYS(10.0, theta_y2), observerZS(10.0, theta_x2, theta_y2), 1.0 };
 
 	glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse1);
